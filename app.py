@@ -7,6 +7,7 @@ import html
 import json
 import random
 import unicodedata
+from datetime import date
 from pathlib import Path
 from urllib.parse import quote
 
@@ -687,20 +688,24 @@ def neighbor(pool: list[dict], current: dict, step: int = 1) -> dict:
     return pool[(index + step) % len(ids)]
 
 
+BRAND_MARK = """
+<div class="brand">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path d="M5 4.5h10.5A2.5 2.5 0 0 1 18 7v12.2a1.8 1.8 0 0 0-1.8-1.7H5V4.5Z" stroke="#1E293B" stroke-width="1.6"/>
+    <path d="M5 4.5A2.2 2.2 0 0 0 2.8 6.7V18a2.2 2.2 0 0 0 2.2 2.2H16" stroke="#1E293B" stroke-width="1.6"/>
+    <path d="M8 8.2h6.2M8 11.4h6.2" stroke="#1E293B" stroke-width="1.4" stroke-linecap="round"/>
+  </svg>
+  <div class="logo">Lingua</div>
+</div>
+"""
+
+
 def render_brand() -> None:
-    st.markdown(
-        """
-        <div class="brand">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M5 4.5h10.5A2.5 2.5 0 0 1 18 7v12.2a1.8 1.8 0 0 0-1.8-1.7H5V4.5Z" stroke="#1E293B" stroke-width="1.6"/>
-            <path d="M5 4.5A2.2 2.2 0 0 0 2.8 6.7V18a2.2 2.2 0 0 0 2.2 2.2H16" stroke="#1E293B" stroke-width="1.6"/>
-            <path d="M8 8.2h6.2M8 11.4h6.2" stroke="#1E293B" stroke-width="1.4" stroke-linecap="round"/>
-          </svg>
-          <div class="logo">Lingua</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    st.markdown(BRAND_MARK, unsafe_allow_html=True)
+
+
+def render_brand_mark() -> None:
+    st.markdown(BRAND_MARK.replace('<div class="logo">Lingua</div>', ""), unsafe_allow_html=True)
 
 
 def toggle_quiz() -> None:
@@ -712,10 +717,119 @@ def toggle_quiz() -> None:
     st.session_state.quiz = None
 
 
+def daily_word(records: list[dict]) -> dict:
+    by_ko = {row["한국어"]: row for row in records}
+    pool = [by_ko[name] for name in PREFERRED if name in by_ko] or records
+    return pool[date.today().toordinal() % len(pool)]
+
+
+def go_home() -> None:
+    st.session_state.home = True
+    st.session_state.panel = None
+    st.session_state.mode = "dict"
+    st.session_state.quiz = None
+    st.session_state.query = ""
+    st.session_state.category_applied = "전체"
+    st.session_state.category_pills = "전체"
+    st.session_state.reading = False
+    st.session_state.home_query = ""
+
+
+def open_from_home(word_id: int) -> None:
+    open_word(word_id)
+    st.session_state.home = False
+    st.session_state.mode = "dict"
+    st.session_state.panel = None
+    st.session_state.query = ""
+
+
+def home_panel(name: str) -> None:
+    st.session_state.home = False
+    st.session_state.mode = "dict"
+    st.session_state.quiz = None
+    st.session_state.panel = name
+
+
+def clear_history() -> None:
+    st.session_state.history = []
+
+
+def render_home(records: list[dict], by_id: dict[int, dict]) -> None:
+    with st.container(key="home"):
+        with st.container(key="hometop", horizontal=True, vertical_alignment="center", wrap=False):
+            render_brand()
+            with st.container(key="homeicons", horizontal=True, vertical_alignment="center", gap="small", wrap=False):
+                st.button("◷", key="home_history", on_click=home_panel, args=("history",))
+                st.markdown('<span class="home-rule"></span>', unsafe_allow_html=True)
+                st.button("☆", key="home_favorites", on_click=home_panel, args=("favorites",))
+                st.markdown('<span class="home-rule"></span>', unsafe_allow_html=True)
+                st.button("⚙", key="home_settings", on_click=home_panel, args=("settings",))
+        st.markdown(
+            """
+            <div class="home-hero">
+              <h1 class="home-title">Lingua</h1>
+              <p class="home-tag">— &nbsp; Look up. Learn more. &nbsp; —</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        with st.form("home_search", border=False):
+            with st.container(key="homesearch", horizontal=True, vertical_alignment="center", wrap=False):
+                st.text_input(
+                    "검색",
+                    key="home_query",
+                    label_visibility="collapsed",
+                    placeholder="Search for a word...",
+                )
+                submitted = st.form_submit_button("→")
+        if submitted:
+            query = (st.session_state.get("home_query") or "").strip()
+            if query:
+                st.session_state.query = query
+                st.session_state.home = False
+                st.session_state.mode = "dict"
+                st.session_state.panel = None
+                st.session_state.category_applied = "전체"
+                st.session_state.reading = False
+                st.rerun()
+        word = daily_word(records)
+        with st.container(key="wotd"):
+            st.markdown(
+                (
+                    '<div class="wotd-card">'
+                    '<div class="wotd-kicker">Word of the Day</div>'
+                    '<div class="wotd-line">'
+                    f'<span class="wotd-word">{html.escape(word["한국어"])}</span>'
+                    f'<span class="wotd-py">{html.escape(str(word.get("병음") or ""))}</span>'
+                    '<span class="wotd-go">›</span>'
+                    "</div></div>"
+                ),
+                unsafe_allow_html=True,
+            )
+            st.button("오늘의 단어", key="wotd_open", on_click=open_from_home, args=(word["번호"],))
+        recent = [by_id[item] for item in st.session_state.history if item in by_id][:3]
+        if recent:
+            with st.container(key="recent", horizontal=True, vertical_alignment="center", wrap=True, gap="small"):
+                st.markdown(
+                    '<p class="recent-label">Recent Searches</p>',
+                    unsafe_allow_html=True,
+                )
+                for row in recent:
+                    st.button(
+                        row["한국어"],
+                        key=f"recent_{row['번호']}",
+                        on_click=open_from_home,
+                        args=(row["번호"],),
+                    )
+                st.button("Clear", key="recent_clear", on_click=clear_history)
+
+
 def render_topbar() -> None:
     quiz_on = st.session_state.get("mode") == "quiz"
     with st.container(key="topbar", horizontal=True, vertical_alignment="center", wrap=False):
-        render_brand()
+        with st.container(key="brandhome", horizontal=True, vertical_alignment="center", gap="small", wrap=False):
+            render_brand_mark()
+            st.button("Lingua", key="brand_home", on_click=go_home)
         with st.container(key="navrow", horizontal=True, vertical_alignment="center", gap="small", wrap=False):
             st.button(
                 "검색기록",
@@ -957,6 +1071,8 @@ def main() -> None:
         st.session_state.seen = read_user_data().get("seen", [])
     if st.session_state.get("quiz_scope") == "이 파트":
         st.session_state.quiz_scope = "분야별"
+    if "home" not in st.session_state:
+        st.session_state.home = True
     by_id = {row["번호"]: row for row in records}
     by_cat: dict[str, list[dict]] = {name: [] for name in CATEGORIES}
     for row in records:
@@ -967,6 +1083,11 @@ def main() -> None:
     st.session_state.word_cats = {row["번호"]: row["범주"] for row in records}
     if st.query_params:
         st.query_params.clear()
+
+    if st.session_state.home:
+        render_home(records, by_id)
+        persist()
+        return
 
     with st.container(key="stickyhead"):
         render_topbar()
