@@ -24,8 +24,85 @@ USER_PATH = ROOT / "user_data.json"
 STYLE_PATH = ROOT / "styles.css"
 BG_PHOTO = ROOT / "assets" / "bg_ink_wash.jpg"
 BG_PATH = ROOT / "assets" / "bg_ink_wash.svg"
+HOME_BG = ROOT / "assets" / "home_bg.jpg"
+LOGO_PATH = ROOT / "assets" / "logo.png"
+SITE_NAME = "译语类解"
 SHEET = "한중 실무 사전"
 CATEGORIES = ["무역·물류", "비즈니스 이메일", "취업·면접", "경제·금융", "IT·산업", "일반 비즈니스"]
+CATEGORY_ZH = {
+    "무역·물류": "贸易·物流",
+    "비즈니스 이메일": "商务邮件",
+    "취업·면접": "求职·面试",
+    "경제·금융": "经济·金融",
+    "IT·산업": "IT·产业",
+    "일반 비즈니스": "一般商务",
+}
+TEXT = {
+    "검색기록": ("검색기록", "检索记录"),
+    "즐겨찾기": ("즐겨찾기", "收藏"),
+    "단어장": ("단어장", "单词本"),
+    "퀴즈": ("퀴즈", "测验"),
+    "설정": ("설정", "设置"),
+    "중문전환": ("中文", "한국어"),
+    "검색자리": ("한국어 · 중국어 · 병음", "韩语 · 中文 · 拼音"),
+    "홈검색": ("단어를 검색하세요", "搜索单词"),
+    "태그라인": ("찾아보고 익히세요", "查一词，懂更多"),
+    "오늘의단어": ("오늘의 단어", "每日一词"),
+    "최근검색": ("최근 검색", "最近搜索"),
+    "지우기": ("지우기", "清除"),
+    "닫기": ("닫기", "关闭"),
+    "최근힌트": ("최근에 연 표제어입니다.", "最近打开的词条。"),
+    "내단어장": ("내 단어장", "我的单词本"),
+    "내 단어장": ("내 단어장", "我的单词本"),
+    "틀린 단어": ("틀린 단어", "错题"),
+    "비어있음": ("아직 비어 있습니다.", "还是空的。"),
+    "병음표시": ("병음(Pinyin) 표시", "显示拼音"),
+    "예문병음": ("예문 병음 표시", "显示例句拼音"),
+    "발음속도": ("발음 속도", "语速"),
+    "설정힌트": (
+        "재생 버튼은 브라우저 음성 합성(한국어 ko-KR, 중국어 zh-CN)을 사용합니다. 속도는 이 슬라이더 값이 바로 반영됩니다.",
+        "朗读使用浏览器语音合成（韩语 ko-KR、中文 zh-CN）。语速会立即反映这个滑块的值。",
+    ),
+    "단어장힌트": ("파트를 누르면 그 표제어가 열립니다.", "点开分类即可查看词条。"),
+    "파트없음": ("이 파트에 표제어가 없습니다.", "这个分类还没有词条。"),
+    "학습": ("{done}/{total} 학습", "{done}/{total} 已学"),
+    "파트학습": ("이 파트 {done}/{total} 학습", "本部分 {done}/{total} 已学"),
+    "뜻없음": ("뜻풀이가 없습니다.", "暂无释义。"),
+    "예문없음": ("등록된 예문이 없습니다.", "暂无例句。"),
+    "예문": ("실무 예문", "实务例句"),
+    "관련어휘": ("관련 실무 어휘", "相关实务词汇"),
+    "저장됨": ("✓ 단어장에 저장됨", "✓ 已存入单词本"),
+    "저장": ("📖 내 단어장에 저장", "📖 存入单词本"),
+    "이전": ("이전", "上一个"),
+    "다음": ("다음", "下一个"),
+    "목록": ("목록", "列表"),
+    "다음단어": ("다음 단어", "下一个词"),
+    "검색없음": ("해당하는 표제어가 없습니다.", "没有对应的词条。"),
+    "전체": ("전체", "全部"),
+    "분야별": ("분야별", "按领域"),
+    "틀린단어": ("틀린 단어", "错题"),
+    "문제": ("문제", "题"),
+    "방향중한": ("중국어 → 한국어", "中文 → 韩语"),
+    "방향한중": ("한국어 → 중국어", "韩语 → 中文"),
+    "뜻고르기": ("한국어 뜻을 고르세요", "请选择韩语释义"),
+    "중국어고르기": ("알맞은 중국어를 고르세요", "请选择对应中文"),
+    "퀴즈진행": ("퀴즈 {n} / {total} · {scope} · {score}개 맞춤", "测验 {n} / {total} · {scope} · 答对 {score}题"),
+    "퀴즈끝": ("퀴즈 · {scope} · {score} / {total}", "测验 · {scope} · {score} / {total}"),
+    "퀴즈제목": ("퀴즈 · {scope}", "测验 · {scope}"),
+    "퀴즈완료": ("이번 퀴즈를 마쳤습니다.", "这次测验做完了。"),
+    "틀린목록": ("틀린 단어: {names}", "错题：{names}"),
+    "틀린다시": ("틀린 단어만 다시", "只重做错题"),
+    "다시풀기": ("다시 풀기", "再做一次"),
+    "사전으로": ("사전으로", "返回词典"),
+    "결과보기": ("결과 보기", "查看结果"),
+    "다음문제": ("다음 문제", "下一题"),
+    "정답": ("정답은 {answer}입니다.", "正确答案是 {answer}。"),
+    "단어부족": (
+        "내 단어장에 4개 이상 저장하면 그 단어로 퀴즈를 낼 수 있습니다.",
+        "单词本至少保存 4 个词后，才能用这些词出题。",
+    ),
+    "파트제목": ("단어장 · {name} · {done}/{total} 학습", "单词本 · {name} · {done}/{total} 已学"),
+}
 PREFERRED = ["선하증권", "계약", "이력서", "신용장"]
 EXAMPLE_FIELDS = [
     ("예문1 중국어", "예문1 병음", "예문1 한국어"),
@@ -33,7 +110,7 @@ EXAMPLE_FIELDS = [
 ]
 
 st.set_page_config(
-    page_title="Lingua · 한중 실무 사전",
+    page_title="译语类解 · 한중 실무 사전",
     page_icon="📖",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -55,7 +132,7 @@ def find_workbook() -> Path:
 
 
 @st.cache_data(show_spinner="사전을 펼치는 중…")
-def load_dictionary(path: str, _modified: float) -> list[dict]:
+def load_dictionary(path: str, modified: float) -> list[dict]:
     frame = pd.read_excel(path, sheet_name=SHEET).fillna("")
     records = frame.to_dict("records")
     cleaned = []
@@ -73,8 +150,48 @@ def load_dictionary(path: str, _modified: float) -> list[dict]:
     return cleaned
 
 
+def lang() -> str:
+    return "zh" if st.session_state.get("lang") == "zh" else "ko"
+
+
+def t(key: str, **kwargs: object) -> str:
+    pair = TEXT.get(key)
+    text = pair[1] if pair and lang() == "zh" else pair[0] if pair else key
+    return text.format(**kwargs) if kwargs else text
+
+
+def cat_label(name: str) -> str:
+    if lang() == "zh":
+        return CATEGORY_ZH.get(name, name)
+    return name
+
+
+def shown(name: str) -> str:
+    if name in CATEGORY_ZH:
+        return cat_label(name)
+    return t(name)
+
+
+def toggle_lang() -> None:
+    st.session_state.lang = "ko" if lang() == "zh" else "zh"
+
+
+def logo_src() -> str:
+    if not LOGO_PATH.exists():
+        return ""
+    encoded = base64.b64encode(LOGO_PATH.read_bytes()).decode("ascii")
+    return f"data:image/png;base64,{encoded}"
+
+
+def brand_html(with_name: bool = True) -> str:
+    image = logo_src()
+    mark = f'<img class="brand-logo" alt="" src="{image}">' if image else ""
+    name = f'<div class="logo">{SITE_NAME}</div>' if with_name else ""
+    return f'<div class="brand">{mark}{name}</div>'
+
+
 def default_settings() -> dict:
-    return {"show_pinyin": True, "show_example_pinyin": True, "tts_rate": 0.95}
+    return {"show_pinyin": True, "show_example_pinyin": True, "tts_rate": 0.95, "lang": "ko"}
 
 
 def read_user_data() -> dict:
@@ -105,6 +222,7 @@ def persist() -> None:
             "show_pinyin": bool(st.session_state.show_pinyin),
             "show_example_pinyin": bool(st.session_state.show_example_pinyin),
             "tts_rate": float(st.session_state.tts_rate),
+            "lang": lang(),
         },
     }
     text = json.dumps(payload, ensure_ascii=False, indent=2)
@@ -134,6 +252,7 @@ def init_state(records: list[dict]) -> None:
     st.session_state.show_pinyin = settings["show_pinyin"]
     st.session_state.show_example_pinyin = settings["show_example_pinyin"]
     st.session_state.tts_rate = float(settings["tts_rate"])
+    st.session_state.lang = "zh" if settings.get("lang") == "zh" else "ko"
     st.session_state.selected_id = pick_default(records)
     st.session_state.panel = None
     st.session_state.browse_open = False
@@ -170,11 +289,11 @@ def render_part_words(choice: str, words: list[dict]) -> None:
     with st.container(key="catlist"):
         done = sum(1 for row in words if row["번호"] in seen_ids())
         st.markdown(
-            f'<p class="panel-title">단어장 · {html.escape(choice)} · {done}/{len(words)} 학습</p>',
+            f'<p class="panel-title">{html.escape(t("파트제목", name=cat_label(choice), done=done, total=len(words)))}</p>',
             unsafe_allow_html=True,
         )
         if not words:
-            st.markdown('<p class="empty-note">이 파트에 표제어가 없습니다.</p>', unsafe_allow_html=True)
+            st.markdown(f'<p class="empty-note">{html.escape(t("파트없음"))}</p>', unsafe_allow_html=True)
             return
         with st.container(key="partscroll", height=420):
             for row in words:
@@ -188,14 +307,14 @@ def render_part_words(choice: str, words: list[dict]) -> None:
 
 def render_wordbook(by_cat: dict[str, list[dict]]) -> None:
     with st.container(key="wordbookhome"):
-        st.markdown('<p class="panel-title">단어장</p>', unsafe_allow_html=True)
-        st.markdown('<p class="hint">파트를 누르면 그 표제어가 열립니다.</p>', unsafe_allow_html=True)
+        st.markdown(f'<p class="panel-title">{html.escape(t("단어장"))}</p>', unsafe_allow_html=True)
+        st.markdown(f'<p class="hint">{html.escape(t("단어장힌트"))}</p>', unsafe_allow_html=True)
         seen = seen_ids()
         for name in CATEGORIES:
             rows = by_cat.get(name, [])
             done = sum(1 for row in rows if row["번호"] in seen)
             st.button(
-                f"{name}  ·  {done}/{len(rows)}",
+                f"{cat_label(name)}  ·  {done}/{len(rows)}",
                 key=f"open_part_{name}",
                 on_click=open_part,
                 args=(name,),
@@ -265,25 +384,40 @@ def toggle_browse() -> None:
     st.session_state.browse_open = not st.session_state.browse_open
 
 
+def _scene_layer(selector: str, encoded: str, fallback: str) -> str:
+    uri = "data:image/jpeg;base64," + encoded
+    return (
+        f"{selector}{{background-image:none !important;background-color:{fallback} !important;}}"
+        f"{selector}::before{{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;"
+        f"background:url('{uri}') center/cover no-repeat;}}"
+    )
+
+
 def inject_styles() -> None:
     css = STYLE_PATH.read_text(encoding="utf-8") if STYLE_PATH.exists() else ""
+    css += (
+        ".stApp{position:relative;background-image:none !important;}"
+        "[data-testid='stAppViewContainer'],[data-testid='stMain']{"
+        "background:transparent !important;position:relative;z-index:1;}"
+        ".block-container{position:relative;z-index:1;min-height:100vh;"
+        "background:transparent !important;background-image:none !important;}"
+    )
     if BG_PHOTO.exists():
         encoded = base64.b64encode(BG_PHOTO.read_bytes()).decode("ascii")
-        css += (
-            ".stApp{background-image:url('data:image/jpeg;base64," + encoded + "') !important;"
-            "background-size:cover !important;background-attachment:fixed !important;"
-            "background-position:center center !important;}"
-        )
+        css += _scene_layer(".stApp:not(:has(.st-key-home))", encoded, "#c5d4de")
     elif BG_PATH.exists():
         svg = BG_PATH.read_text(encoding="utf-8")
         uri = "data:image/svg+xml;charset=UTF-8," + quote(svg)
         css += (
             ".stApp{background-image:url('" + uri + "') !important;"
-            "background-size:cover !important;background-attachment:fixed !important;"
+            "background-size:cover !important;background-attachment:scroll !important;"
             "background-position:center !important;}"
         )
     else:
         css += ".stApp{background-image:linear-gradient(180deg,#f4f7f8 0%,#c5d5df 48%,#6d8794 100%) !important;}"
+    if HOME_BG.exists():
+        encoded = base64.b64encode(HOME_BG.read_bytes()).decode("ascii")
+        css += _scene_layer(".stApp:has(.st-key-home)", encoded, "#e7eef2")
     st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
 
 
@@ -295,14 +429,15 @@ def render_head(current: dict, rate: float, show_pinyin: bool) -> None:
     pinyin_html = f'<div class="py">{pinyin}</div>' if pinyin else ""
     components.html(
         f"""
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@700&family=Noto+Serif+SC:wght@600&display=swap">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/lxgwwenkai-regular.css">
         <style>
           html, body {{ margin: 0; padding: 10px 0 0; background: transparent; overflow: visible;
-            font-family: Pretendard, "Noto Sans KR", "PingFang SC", "Microsoft YaHei", "Malgun Gothic", sans-serif; }}
+            font-family: Pretendard, "Noto Sans KR", "Malgun Gothic", sans-serif; }}
           .line {{ display: flex; align-items: center; gap: 10px; }}
           .ko {{ font-size: 32px; font-weight: 700; color: #1e293b; letter-spacing: -0.03em; line-height: 1.15; }}
-          .zh {{ font-family: "Noto Serif SC", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", serif;
-            font-size: 30px; font-weight: 600; color: #1e293b; line-height: 1.2; }}
+          .zh {{ font-family: "LXGW WenKai", "KaiTi", "STKaiti", "Kaiti SC", "楷体", serif;
+            font-weight: 400; font-synthesis: none;
+            font-size: 30px; color: #1e293b; line-height: 1.2; }}
           .py {{ margin-top: 2px; font-size: 14px; color: #64748b; font-family: "Noto Sans", sans-serif; }}
           button {{
             width: 36px; height: 36px; border-radius: 999px; cursor: pointer; flex: 0 0 auto;
@@ -568,21 +703,21 @@ def render_quiz(by_id: dict[int, dict]) -> None:
                 with st.container(key="quizscopes", horizontal=True, gap="small", wrap=False):
                     for name in QUIZ_SCOPES:
                         st.button(
-                            name,
+                            t(name),
                             key=f"scope_{name}",
                             type="primary" if active_quiz_scope() == name else "secondary",
                             on_click=set_quiz_scope,
                             args=(name,),
                         )
                 st.button(
-                    "중국어 → 한국어" if direction == "zh" else "한국어 → 중국어",
+                    t("방향중한") if direction == "zh" else t("방향한중"),
                     key="quiz_flip",
                     on_click=flip_quiz_direction,
                 )
             with st.container(key="quizcounts", horizontal=True, gap="small", wrap=False):
                 for count in QUIZ_COUNTS:
                     st.button(
-                        f"{count}문제",
+                        f"{count}{t('문제')}",
                         key=f"count_{count}",
                         type="primary" if selected_count == count else "secondary",
                         on_click=set_quiz_count,
@@ -593,7 +728,7 @@ def render_quiz(by_id: dict[int, dict]) -> None:
                 with st.container(key="quizfields", horizontal=True, gap="small", wrap=True):
                     for name in CATEGORIES:
                         st.button(
-                            name,
+                            cat_label(name),
                             key=f"field_{name}",
                             type="primary" if field == name else "secondary",
                             on_click=set_quiz_field,
@@ -601,34 +736,40 @@ def render_quiz(by_id: dict[int, dict]) -> None:
                         )
         notice = quiz.get("notice") or ""
         if notice:
-            st.markdown(f'<p class="quiz-progress">퀴즈 · {html.escape(scope)}</p>', unsafe_allow_html=True)
-            st.markdown(f'<p class="meaning quiz-center">{html.escape(notice)}</p>', unsafe_allow_html=True)
+            st.markdown(
+                f'<p class="quiz-progress">{html.escape(t("퀴즈제목", scope=shown(scope)))}</p>',
+                unsafe_allow_html=True,
+            )
+            st.markdown(f'<p class="meaning quiz-center">{html.escape(t("단어부족") if notice else "")}</p>', unsafe_allow_html=True)
             return
         if finished:
             st.markdown(
-                f'<p class="quiz-progress">퀴즈 · {html.escape(scope)} · {quiz["score"]} / {total}</p>',
+                f'<p class="quiz-progress">{html.escape(t("퀴즈끝", scope=shown(scope), score=quiz["score"], total=total))}</p>',
                 unsafe_allow_html=True,
             )
             st.markdown(f'<p class="quiz-word">{quiz["score"]} / {total}</p>', unsafe_allow_html=True)
-            st.markdown('<p class="meaning quiz-center">이번 퀴즈를 마쳤습니다.</p>', unsafe_allow_html=True)
+            st.markdown(f'<p class="meaning quiz-center">{html.escape(t("퀴즈완료"))}</p>', unsafe_allow_html=True)
             wrong_ids = [int(item) for item in quiz.get("wrong") or [] if int(item) in by_id]
             if wrong_ids:
                 names = ", ".join(by_id[item]["한국어"] for item in wrong_ids)
-                st.markdown(f'<p class="hint quiz-center">틀린 단어: {html.escape(names)}</p>', unsafe_allow_html=True)
-                st.button("틀린 단어만 다시", key="quiz_retry", on_click=retry_wrong)
-            st.button("다시 풀기", key="quiz_again", on_click=reset_quiz)
-            st.button("사전으로", key="quiz_back", on_click=toggle_quiz)
+                st.markdown(
+                    f'<p class="hint quiz-center">{html.escape(t("틀린목록", names=names))}</p>',
+                    unsafe_allow_html=True,
+                )
+                st.button(t("틀린다시"), key="quiz_retry", on_click=retry_wrong)
+            st.button(t("다시풀기"), key="quiz_again", on_click=reset_quiz)
+            st.button(t("사전으로"), key="quiz_back", on_click=toggle_quiz)
             return
         question = quiz["questions"][quiz["index"]]
         answer = by_id[question["answer"]]
-        prompt = "한국어 뜻을 고르세요" if direction == "zh" else "알맞은 중국어를 고르세요"
+        prompt = t("뜻고르기") if direction == "zh" else t("중국어고르기")
         st.markdown(
-            f'<p class="quiz-progress">퀴즈 {quiz["index"] + 1} / {total} · {html.escape(scope)} · {quiz["score"]}개 맞춤</p>',
+            f'<p class="quiz-progress">{html.escape(t("퀴즈진행", n=quiz["index"] + 1, total=total, scope=shown(scope), score=quiz["score"]))}</p>',
             unsafe_allow_html=True,
         )
         st.markdown(
             f'<div class="quiz-stage"><p class="quiz-prompt">{html.escape(prompt)}</p>'
-            f'<span class="badge">{html.escape(answer["범주"])}</span></div>',
+            f'<span class="badge">{html.escape(cat_label(answer["범주"]))}</span></div>',
             unsafe_allow_html=True,
         )
         if direction == "zh":
@@ -673,11 +814,11 @@ def render_quiz(by_id: dict[int, dict]) -> None:
             st.markdown("".join(blocks), unsafe_allow_html=True)
             correct = choice_text(answer)
             st.markdown(
-                f'<p class="meaning quiz-center">정답은 <b>{html.escape(correct)}</b>입니다.</p>',
+                f'<p class="meaning quiz-center">{t("정답", answer=f"<b>{html.escape(correct)}</b>")}</p>',
                 unsafe_allow_html=True,
             )
             last = quiz["index"] + 1 >= total
-            st.button("결과 보기" if last else "다음 문제", key="quiz_next", on_click=next_quiz)
+            st.button(t("결과보기") if last else t("다음문제"), key="quiz_next", on_click=next_quiz)
 
 
 def neighbor(pool: list[dict], current: dict, step: int = 1) -> dict:
@@ -688,24 +829,12 @@ def neighbor(pool: list[dict], current: dict, step: int = 1) -> dict:
     return pool[(index + step) % len(ids)]
 
 
-BRAND_MARK = """
-<div class="brand">
-  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path d="M5 4.5h10.5A2.5 2.5 0 0 1 18 7v12.2a1.8 1.8 0 0 0-1.8-1.7H5V4.5Z" stroke="#1E293B" stroke-width="1.6"/>
-    <path d="M5 4.5A2.2 2.2 0 0 0 2.8 6.7V18a2.2 2.2 0 0 0 2.2 2.2H16" stroke="#1E293B" stroke-width="1.6"/>
-    <path d="M8 8.2h6.2M8 11.4h6.2" stroke="#1E293B" stroke-width="1.4" stroke-linecap="round"/>
-  </svg>
-  <div class="logo">Lingua</div>
-</div>
-"""
-
-
 def render_brand() -> None:
-    st.markdown(BRAND_MARK, unsafe_allow_html=True)
+    st.markdown(brand_html(True), unsafe_allow_html=True)
 
 
 def render_brand_mark() -> None:
-    st.markdown(BRAND_MARK.replace('<div class="logo">Lingua</div>', ""), unsafe_allow_html=True)
+    st.markdown(brand_html(False), unsafe_allow_html=True)
 
 
 def toggle_quiz() -> None:
@@ -717,10 +846,32 @@ def toggle_quiz() -> None:
     st.session_state.quiz = None
 
 
-def daily_word(records: list[dict]) -> dict:
-    by_ko = {row["한국어"]: row for row in records}
-    pool = [by_ko[name] for name in PREFERRED if name in by_ko] or records
-    return pool[date.today().toordinal() % len(pool)]
+def home_panel(name: str) -> None:
+    st.session_state.home = False
+    st.session_state.mode = "dict"
+    st.session_state.panel = name
+    st.session_state.query = ""
+    st.session_state.quiz = None
+    st.session_state.reading = False
+
+
+def home_open(word_id: int) -> None:
+    st.session_state.home = False
+    st.session_state.mode = "dict"
+    st.session_state.panel = None
+    st.session_state.query = ""
+    st.session_state.quiz = None
+    st.session_state.reading = False
+    st.session_state.category_applied = "전체"
+    open_word(int(word_id))
+
+
+def clear_history() -> None:
+    st.session_state.history = []
+
+
+def word_of_day(records: list[dict]) -> dict:
+    return records[date.today().toordinal() % len(records)]
 
 
 def go_home() -> None:
@@ -735,93 +886,74 @@ def go_home() -> None:
     st.session_state.home_query = ""
 
 
-def open_from_home(word_id: int) -> None:
-    open_word(word_id)
-    st.session_state.home = False
-    st.session_state.mode = "dict"
-    st.session_state.panel = None
-    st.session_state.query = ""
-
-
-def home_panel(name: str) -> None:
-    st.session_state.home = False
-    st.session_state.mode = "dict"
-    st.session_state.quiz = None
-    st.session_state.panel = name
-
-
-def clear_history() -> None:
-    st.session_state.history = []
-
-
 def render_home(records: list[dict], by_id: dict[int, dict]) -> None:
+    today = word_of_day(records)
+    pinyin = (today.get("병음") or "").strip()
+    spoken = f'<em>/ {html.escape(pinyin)} /</em>' if pinyin else ""
+    recent = [by_id[item] for item in st.session_state.history if item in by_id][:3]
     with st.container(key="home"):
         with st.container(key="hometop", horizontal=True, vertical_alignment="center", wrap=False):
-            render_brand()
-            with st.container(key="homeicons", horizontal=True, vertical_alignment="center", gap="small", wrap=False):
-                st.button("◷", key="home_history", on_click=home_panel, args=("history",))
-                st.markdown('<span class="home-rule"></span>', unsafe_allow_html=True)
-                st.button("☆", key="home_favorites", on_click=home_panel, args=("favorites",))
-                st.markdown('<span class="home-rule"></span>', unsafe_allow_html=True)
-                st.button("⚙", key="home_settings", on_click=home_panel, args=("settings",))
-        st.markdown(
-            """
-            <div class="home-hero">
-              <h1 class="home-title">Lingua</h1>
-              <p class="home-tag">— &nbsp; Look up. Learn more. &nbsp; —</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-        with st.form("home_search", border=False):
-            with st.container(key="homesearch", horizontal=True, vertical_alignment="center", wrap=False):
-                st.text_input(
-                    "검색",
-                    key="home_query",
-                    label_visibility="collapsed",
-                    placeholder="Search for a word...",
-                )
-                submitted = st.form_submit_button("→")
-        if submitted:
-            query = (st.session_state.get("home_query") or "").strip()
-            if query:
-                st.session_state.query = query
-                st.session_state.home = False
-                st.session_state.mode = "dict"
-                st.session_state.panel = None
-                st.session_state.category_applied = "전체"
-                st.session_state.reading = False
-                st.rerun()
-        word = daily_word(records)
-        with st.container(key="wotd"):
+            st.markdown(brand_html(True).replace('class="brand"', 'class="home-brand"', 1), unsafe_allow_html=True)
+            with st.container(key="homeactions", horizontal=True, vertical_alignment="center", gap="small", wrap=False):
+                st.button(t("중문전환"), key="home_lang", on_click=toggle_lang)
+                with st.container(key="homeicons", horizontal=True, vertical_alignment="center", gap="small", wrap=False):
+                    st.button(t("검색기록"), key="home_history", on_click=home_panel, args=("history",))
+                    st.button(t("즐겨찾기"), key="home_star", on_click=home_panel, args=("favorites",))
+                    st.button(t("설정"), key="home_gear", on_click=home_panel, args=("settings",))
+        with st.container(key="homehero"):
             st.markdown(
-                (
-                    '<div class="wotd-card">'
-                    '<div class="wotd-kicker">Word of the Day</div>'
-                    '<div class="wotd-line">'
-                    f'<span class="wotd-word">{html.escape(word["한국어"])}</span>'
-                    f'<span class="wotd-py">{html.escape(str(word.get("병음") or ""))}</span>'
-                    '<span class="wotd-go">›</span>'
-                    "</div></div>"
-                ),
+                f"""
+<h1 class="home-title">译语类解</h1>
+<p class="home-tag"><i></i>{html.escape(t("태그라인"))}<i></i></p>
+                """,
                 unsafe_allow_html=True,
             )
-            st.button("오늘의 단어", key="wotd_open", on_click=open_from_home, args=(word["번호"],))
-        recent = [by_id[item] for item in st.session_state.history if item in by_id][:3]
-        if recent:
-            with st.container(key="recent", horizontal=True, vertical_alignment="center", wrap=True, gap="small"):
+            with st.container(key="homeform"):
+                with st.form("home_search", border=False):
+                    with st.container(key="homesearch", horizontal=True, vertical_alignment="center", wrap=False):
+                        st.text_input(
+                            "검색",
+                            key="home_query",
+                            label_visibility="collapsed",
+                            placeholder=t("홈검색"),
+                        )
+                        submitted = st.form_submit_button("검색")
+            if submitted:
+                query = (st.session_state.get("home_query") or "").strip()
+                if query:
+                    st.session_state.query = query
+                    st.session_state.home = False
+                    st.session_state.mode = "dict"
+                    st.session_state.panel = None
+                    st.session_state.category_applied = "전체"
+                    st.session_state.reading = False
+                    st.rerun()
+            with st.container(key="wotd"):
                 st.markdown(
-                    '<p class="recent-label">Recent Searches</p>',
+                    f"""
+<div class="wotd-card">
+  <span class="wotd-ico" aria-hidden="true"></span>
+  <span class="wotd-copy">
+    <span class="wotd-kicker">{html.escape(t("오늘의단어"))}</span>
+    <span class="wotd-word">{html.escape(today["한국어"])} {spoken}</span>
+  </span>
+  <span class="wotd-go" aria-hidden="true"></span>
+</div>
+                    """,
                     unsafe_allow_html=True,
                 )
-                for row in recent:
-                    st.button(
-                        row["한국어"],
-                        key=f"recent_{row['번호']}",
-                        on_click=open_from_home,
-                        args=(row["번호"],),
-                    )
-                st.button("Clear", key="recent_clear", on_click=clear_history)
+                st.button("오늘의 단어", key="wotd_open", on_click=home_open, args=(today["번호"],))
+            if recent:
+                with st.container(key="homerecent", horizontal=True, vertical_alignment="center", gap="small", wrap=True):
+                    st.markdown(f'<span class="recent-label">{html.escape(t("최근검색"))}</span>', unsafe_allow_html=True)
+                    for row in recent:
+                        st.button(
+                            row["한국어"],
+                            key=f"home_recent_{row['번호']}",
+                            on_click=home_open,
+                            args=(row["번호"],),
+                        )
+                    st.button(t("지우기"), key="home_clear", on_click=clear_history)
 
 
 def render_topbar() -> None:
@@ -829,41 +961,42 @@ def render_topbar() -> None:
     with st.container(key="topbar", horizontal=True, vertical_alignment="center", wrap=False):
         with st.container(key="brandhome", horizontal=True, vertical_alignment="center", gap="small", wrap=False):
             render_brand_mark()
-            st.button("Lingua", key="brand_home", on_click=go_home)
+            st.button(SITE_NAME, key="brand_home", on_click=go_home)
         with st.container(key="navrow", horizontal=True, vertical_alignment="center", gap="small", wrap=False):
             st.button(
-                "검색기록",
+                t("검색기록"),
                 key="nav_history",
                 type="primary" if st.session_state.panel == "history" else "secondary",
                 on_click=toggle_panel,
                 args=("history",),
             )
             st.button(
-                "즐겨찾기",
+                t("즐겨찾기"),
                 key="nav_favorites",
                 type="primary" if st.session_state.panel == "favorites" else "secondary",
                 on_click=toggle_panel,
                 args=("favorites",),
             )
             st.button(
-                "단어장",
+                t("단어장"),
                 key="nav_book",
                 type="primary" if st.session_state.get("mode") == "book" else "secondary",
                 on_click=toggle_book,
             )
             st.button(
-                "퀴즈",
+                t("퀴즈"),
                 key="nav_quiz",
                 type="primary" if quiz_on else "secondary",
                 on_click=toggle_quiz,
             )
             st.button(
-                "설정",
+                t("설정"),
                 key="nav_settings",
                 type="primary" if st.session_state.panel == "settings" else "secondary",
                 on_click=toggle_panel,
                 args=("settings",),
             )
+            st.button(t("중문전환"), key="nav_lang", on_click=toggle_lang)
 
 
 def render_word_buttons(
@@ -876,7 +1009,7 @@ def render_word_buttons(
     pick = on_pick or remember
     visible = [by_id[word_id] for word_id in ids if word_id in by_id]
     if not visible:
-        st.markdown('<p class="empty-note">아직 비어 있습니다.</p>', unsafe_allow_html=True)
+        st.markdown(f'<p class="empty-note">{html.escape(t("비어있음"))}</p>', unsafe_allow_html=True)
         return
     if columns == 1:
         for row in visible[:12]:
@@ -904,25 +1037,22 @@ def render_panel(by_id: dict[int, dict]) -> None:
     if not panel:
         return
     with st.container(key="drawer"):
-        st.button("닫기", key="close_panel", on_click=toggle_panel, args=(panel,))
+        st.button(t("닫기"), key="close_panel", on_click=toggle_panel, args=(panel,))
         if panel == "history":
-            st.markdown('<p class="panel-title">검색기록</p>', unsafe_allow_html=True)
-            st.markdown('<p class="hint">최근에 연 표제어입니다.</p>', unsafe_allow_html=True)
+            st.markdown(f'<p class="panel-title">{html.escape(t("검색기록"))}</p>', unsafe_allow_html=True)
+            st.markdown(f'<p class="hint">{html.escape(t("최근힌트"))}</p>', unsafe_allow_html=True)
             render_word_buttons(st.session_state.history, by_id, "hist", on_pick=open_from_panel)
         elif panel == "favorites":
-            st.markdown('<p class="panel-title">즐겨찾기</p>', unsafe_allow_html=True)
+            st.markdown(f'<p class="panel-title">{html.escape(t("즐겨찾기"))}</p>', unsafe_allow_html=True)
             render_word_buttons(st.session_state.favorites, by_id, "favrow", on_pick=open_from_panel)
-            st.markdown('<p class="panel-title">내 단어장</p>', unsafe_allow_html=True)
+            st.markdown(f'<p class="panel-title">{html.escape(t("내단어장"))}</p>', unsafe_allow_html=True)
             render_word_buttons(st.session_state.wordbook, by_id, "bookrow", on_pick=open_from_panel)
         else:
-            st.markdown('<p class="panel-title">설정</p>', unsafe_allow_html=True)
-            st.toggle("병음(Pinyin) 표시", key="show_pinyin")
-            st.toggle("예문 병음 표시", key="show_example_pinyin")
-            st.slider("발음 속도", min_value=0.6, max_value=1.4, step=0.05, key="tts_rate")
-            st.markdown(
-                '<p class="hint">재생 버튼은 브라우저 음성 합성(한국어 ko-KR, 중국어 zh-CN)을 사용합니다. 속도는 이 슬라이더 값이 바로 반영됩니다.</p>',
-                unsafe_allow_html=True,
-            )
+            st.markdown(f'<p class="panel-title">{html.escape(t("설정"))}</p>', unsafe_allow_html=True)
+            st.toggle(t("병음표시"), key="show_pinyin")
+            st.toggle(t("예문병음"), key="show_example_pinyin")
+            st.slider(t("발음속도"), min_value=0.6, max_value=1.4, step=0.05, key="tts_rate")
+            st.markdown(f'<p class="hint">{html.escape(t("설정힌트"))}</p>', unsafe_allow_html=True)
 
 
 def example_count(row: dict) -> int:
@@ -940,7 +1070,7 @@ def render_examples(row: dict) -> None:
         if not any((zh, py, ko)):
             continue
         if not shown:
-            st.markdown('<p class="kicker">실무 예문</p>', unsafe_allow_html=True)
+            st.markdown(f'<p class="kicker">{html.escape(t("예문"))}</p>', unsafe_allow_html=True)
             shown = True
         parts = []
         if zh:
@@ -951,43 +1081,43 @@ def render_examples(row: dict) -> None:
             parts.append(f'<p class="ko-ex">{html.escape(ko)}</p>')
         st.markdown("".join(parts), unsafe_allow_html=True)
     if not shown:
-        st.markdown('<p class="empty-note">등록된 예문이 없습니다.</p>', unsafe_allow_html=True)
+        st.markdown(f'<p class="empty-note">{html.escape(t("예문없음"))}</p>', unsafe_allow_html=True)
 
 
 def render_card(current: dict, pool: list[dict], neighbors: tuple[dict | None, dict | None] | None = None) -> None:
     rate = float(st.session_state.tts_rate)
     with st.container(key="wordcard"):
         render_head(current, rate, bool(st.session_state.show_pinyin))
-        st.markdown(f'<span class="badge">{html.escape(current["범주"])}</span>', unsafe_allow_html=True)
+        st.markdown(f'<span class="badge">{html.escape(cat_label(current["범주"]))}</span>', unsafe_allow_html=True)
         if neighbors is not None:
             part_ids = [int(item) for item in st.session_state.get("part_ids") or []]
             seen = seen_ids()
             done = sum(1 for word_id in part_ids if word_id in seen)
             st.markdown(
-                f'<p class="hint">이 파트 {done}/{len(part_ids)} 학습</p>',
+                f'<p class="hint">{html.escape(t("파트학습", done=done, total=len(part_ids)))}</p>',
                 unsafe_allow_html=True,
             )
-        meaning = current["뜻"] or "뜻풀이가 없습니다."
+        meaning = current["뜻"] or t("뜻없음")
         st.markdown(f'<p class="meaning">{html.escape(meaning)}</p>', unsafe_allow_html=True)
         loved = current["번호"] in st.session_state.favorites
         saved = current["번호"] in st.session_state.wordbook
         fav_col, book_col = st.columns(2)
         with fav_col:
             st.button(
-                "♥ 즐겨찾기" if loved else "♡ 즐겨찾기",
+                f"♥ {t('즐겨찾기')}" if loved else f"♡ {t('즐겨찾기')}",
                 key="fav_on" if loved else "fav_off",
                 on_click=toggle_list,
                 args=("favorites", current["번호"]),
             )
         with book_col:
             st.button(
-                "✓ 단어장에 저장됨" if saved else "📖 내 단어장에 저장",
+                t("저장됨") if saved else t("저장"),
                 key="book_on" if saved else "book_off",
                 on_click=toggle_list,
                 args=("wordbook", current["번호"]),
             )
         st.markdown('<hr class="hairline"/>', unsafe_allow_html=True)
-        st.markdown('<p class="kicker">관련 실무 어휘</p>', unsafe_allow_html=True)
+        st.markdown(f'<p class="kicker">{html.escape(t("관련어휘"))}</p>', unsafe_allow_html=True)
         related = related_words(pool, current)
         if related:
             with st.container(horizontal=True, wrap=True, gap="small", key="relatedrow"):
@@ -1004,23 +1134,23 @@ def render_card(current: dict, pool: list[dict], neighbors: tuple[dict | None, d
             with st.container(key="cardnav", horizontal=True, wrap=False, gap="small"):
                 if prev_row:
                     st.button(
-                        f"이전 · {prev_row['한국어']}",
+                        f"{t('이전')} · {prev_row['한국어']}",
                         key="card_prev",
                         on_click=step_word,
                         args=(-1,),
                     )
                 else:
-                    st.button("이전", key="card_prev_off", disabled=True)
+                    st.button(t("이전"), key="card_prev_off", disabled=True)
                 if next_row:
                     st.button(
-                        f"다음 · {next_row['한국어']}",
+                        f"{t('다음')} · {next_row['한국어']}",
                         key="card_next",
                         on_click=step_word,
                         args=(1,),
                     )
                 else:
-                    st.button("다음", key="card_next_off", disabled=True)
-            st.button("목록", key="back_list", on_click=show_part_list)
+                    st.button(t("다음"), key="card_next_off", disabled=True)
+            st.button(t("목록"), key="back_list", on_click=show_part_list)
         if example_count(current) > 1:
             st.button("More >", key="more_next", on_click=toggle_browse)
     if example_count(current) > 1 and st.session_state.browse_open:
@@ -1031,7 +1161,7 @@ def render_card(current: dict, pool: list[dict], neighbors: tuple[dict | None, d
                 unsafe_allow_html=True,
             )
             st.button(
-                f"다음 단어  ·  {nxt['한국어']}",
+                f"{t('다음단어')}  ·  {nxt['한국어']}",
                 key=f"moreitem_{nxt['번호']}",
                 on_click=remember,
                 args=(nxt["번호"],),
@@ -1096,7 +1226,7 @@ def main() -> None:
                 "검색",
                 key="query",
                 label_visibility="collapsed",
-                placeholder="한국어 · 중국어 · 병음",
+                placeholder=t("검색자리"),
             )
     render_panel(by_id)
     if st.session_state.panel:
@@ -1121,7 +1251,7 @@ def main() -> None:
     if query:
         with st.container(key="suggest", horizontal=True, wrap=True, gap="small"):
             if not hits:
-                st.markdown('<p class="empty-note">해당하는 표제어가 없습니다.</p>', unsafe_allow_html=True)
+                st.markdown(f'<p class="empty-note">{html.escape(t("검색없음"))}</p>', unsafe_allow_html=True)
             else:
                 for word_id in hits:
                     row = by_id[word_id]
