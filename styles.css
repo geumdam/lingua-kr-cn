@@ -161,6 +161,75 @@ footer,
   min-height: 48px !important;
 }
 
+.st-key-searchwrap [data-testid="stForm"] {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+
+.st-key-headersearch {
+  width: 100% !important;
+  align-items: center !important;
+  gap: 0 !important;
+  flex-wrap: nowrap !important;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: 999px;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.st-key-headersearch [data-testid="stTextInput"] {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.st-key-headersearch [data-testid="stTextInput"] input {
+  height: 48px !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.st-key-headersearch [data-testid="stTextInput"] input:focus {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.st-key-headersearch [data-testid="stFormSubmitButton"] {
+  width: auto !important;
+  flex: 0 0 auto !important;
+}
+
+.st-key-headersearch [data-testid="stFormSubmitButton"] button {
+  width: 46px !important;
+  min-width: 46px !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  margin-right: 5px !important;
+  padding: 0 !important;
+  border: none !important;
+  border-left: 1px solid rgba(148, 163, 184, 0.5) !important;
+  border-radius: 0 !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  font-size: 0 !important;
+  color: transparent !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23334155' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: 18px 18px !important;
+}
+
+.st-key-headersearch [data-testid="stFormSubmitButton"] button:hover {
+  background-color: rgba(30, 41, 59, 0.06) !important;
+}
+
 @keyframes header-rise {
   from { transform: translateY(20vh); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }

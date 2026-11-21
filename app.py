@@ -46,6 +46,7 @@ TEXT = {
     "중문전환": ("中文", "한국어"),
     "검색자리": ("한국어 · 중국어 · 병음", "韩语 · 中文 · 拼音"),
     "홈검색": ("단어를 검색하세요", "搜索单词"),
+    "검색실행": ("검색", "搜索"),
     "태그라인": ("찾아보고 익히세요", "查一词，懂更多"),
     "오늘의단어": ("오늘의 단어", "每日一词"),
     "최근검색": ("최근 검색", "最近搜索"),
@@ -108,6 +109,7 @@ EXAMPLE_FIELDS = [
     ("예문1 중국어", "예문1 병음", "예문1 한국어"),
     ("예문2 중국어", "예문2 병음", "예문2 한국어"),
 ]
+TTS_RATE_MIN, TTS_RATE_MAX, TTS_RATE_STEP = 0.6, 2.0, 0.05
 
 st.set_page_config(
     page_title="译语类解 · 한중 실무 사전",
@@ -191,7 +193,31 @@ def brand_html(with_name: bool = True) -> str:
 
 
 def default_settings() -> dict:
-    return {"show_pinyin": True, "show_example_pinyin": True, "tts_rate": 0.95, "lang": "ko"}
+    return {
+        "show_pinyin": True,
+        "show_example_pinyin": True,
+        "tts_rate": 0.95,
+        "lang": "ko",
+    }
+
+
+def prefs() -> dict:
+    """Canonical settings, kept out of widget keys so they survive unmounting."""
+    current = st.session_state.get("prefs")
+    if not isinstance(current, dict):
+        current = default_settings()
+        st.session_state.prefs = current
+    return current
+
+
+def pref(name: str):
+    return prefs().get(name, default_settings()[name])
+
+
+def save_pref(name: str) -> None:
+    value = st.session_state.get(f"ui_{name}")
+    if value is not None:
+        prefs()[name] = value
 
 
 def read_user_data() -> dict:
@@ -201,8 +227,18 @@ def read_user_data() -> dict:
         raw = json.loads(USER_PATH.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         return {"history": [], "favorites": [], "wordbook": [], "seen": [], "settings": default_settings()}
+    stored = raw.get("settings") or {}
     settings = default_settings()
-    settings.update(raw.get("settings") or {})
+    for name in ("show_pinyin", "show_example_pinyin"):
+        if name in stored:
+            settings[name] = bool(stored[name])
+    try:
+        settings["tts_rate"] = min(
+            TTS_RATE_MAX, max(TTS_RATE_MIN, float(stored.get("tts_rate", settings["tts_rate"])))
+        )
+    except (TypeError, ValueError):
+        pass
+    settings["lang"] = "zh" if stored.get("lang") == "zh" else "ko"
     return {
         "history": [int(item) for item in raw.get("history", [])],
         "favorites": [int(item) for item in raw.get("favorites", [])],
@@ -219,16 +255,21 @@ def persist() -> None:
         "wordbook": [int(item) for item in st.session_state.wordbook][:200],
         "seen": [int(item) for item in st.session_state.get("seen") or []][:3000],
         "settings": {
-            "show_pinyin": bool(st.session_state.show_pinyin),
-            "show_example_pinyin": bool(st.session_state.show_example_pinyin),
-            "tts_rate": float(st.session_state.tts_rate),
+            "show_pinyin": bool(pref("show_pinyin")),
+            "show_example_pinyin": bool(pref("show_example_pinyin")),
+            "tts_rate": float(pref("tts_rate")),
             "lang": lang(),
         },
     }
     text = json.dumps(payload, ensure_ascii=False, indent=2)
     if st.session_state.get("_snapshot") == text:
         return
-    USER_PATH.write_text(text, encoding="utf-8")
+    try:
+        USER_PATH.write_text(text, encoding="utf-8")
+    except OSError:
+        # Read-only filesystem (e.g. a hosted deployment): keep working in
+        # memory instead of failing the whole run.
+        pass
     st.session_state._snapshot = text
 
 
@@ -249,9 +290,7 @@ def init_state(records: list[dict]) -> None:
     st.session_state.favorites = saved["favorites"]
     st.session_state.wordbook = saved["wordbook"]
     st.session_state.seen = saved["seen"]
-    st.session_state.show_pinyin = settings["show_pinyin"]
-    st.session_state.show_example_pinyin = settings["show_example_pinyin"]
-    st.session_state.tts_rate = float(settings["tts_rate"])
+    st.session_state.prefs = dict(settings)
     st.session_state.lang = "zh" if settings.get("lang") == "zh" else "ko"
     st.session_state.selected_id = pick_default(records)
     st.session_state.panel = None
@@ -380,6 +419,18 @@ def open_from_panel(word_id: int) -> None:
     st.session_state.mode = "dict"
 
 
+def open_from_search(word_id: int) -> None:
+    """Open a lookup result from any screen (dictionary, wordbook or quiz)."""
+    st.session_state.home = False
+    st.session_state.panel = None
+    st.session_state.quiz = None
+    st.session_state.quiz_retry_ids = None
+    st.session_state.mode = "dict"
+    st.session_state.browse_open = False
+    st.session_state.reading = True
+    open_word(int(word_id))
+
+
 def toggle_browse() -> None:
     st.session_state.browse_open = not st.session_state.browse_open
 
@@ -393,8 +444,139 @@ def _scene_layer(selector: str, encoded: str, fallback: str) -> str:
     )
 
 
+# --- Search field styling -------------------------------------------------
+# The page sits on a blue-grey ink wash. The field carries no border, no
+# stroke and no shadow at all: a single blurred ::before layer behind the
+# input lays down a drift of pale mist that thins to nothing at both ends.
+SEARCH_FIELD_CSS = """
+/* 안개 레이어 — 경계선 없는 배경 */
+.st-key-headersearch,
+.st-key-homeform {
+  position: relative !important;
+  isolation: isolate;
+  overflow: visible !important;
+  background: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.st-key-headersearch::before,
+.st-key-homeform::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 120%;
+  height: 140%;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(40% 62% at 18% 52%, rgba(248,250,252,0.95) 0%, rgba(242,246,250,0.74) 40%, rgba(235,241,246,0.50) 68%, rgba(235,241,246,0) 100%),
+    radial-gradient(36% 58% at 42% 44%, rgba(248,250,252,0.95) 0%, rgba(242,246,250,0.72) 42%, rgba(235,241,246,0.48) 70%, rgba(235,241,246,0) 100%),
+    radial-gradient(38% 64% at 66% 56%, rgba(248,250,252,0.94) 0%, rgba(242,246,250,0.70) 44%, rgba(235,241,246,0.46) 72%, rgba(235,241,246,0) 100%),
+    radial-gradient(32% 54% at 88% 48%, rgba(246,249,252,0.88) 0%, rgba(239,244,248,0.58) 46%, rgba(235,241,246,0.32) 74%, rgba(235,241,246,0) 100%);
+  filter: blur(18px);
+  -webkit-filter: blur(18px);
+}
+
+/* 입력창·아이콘은 안개 위로 */
+.st-key-headersearch > *,
+.st-key-homeform > * {
+  position: relative !important;
+  z-index: 2;
+}
+
+.st-key-headersearch [data-testid="stTextInputRootElement"],
+.st-key-homesearch [data-testid="stTextInputRootElement"],
+.st-key-headersearch div[data-baseweb="input"],
+.st-key-headersearch div[data-baseweb="base-input"],
+.st-key-homesearch div[data-baseweb="input"],
+.st-key-homesearch div[data-baseweb="base-input"],
+.st-key-headersearch [data-testid="stTextInput"] > div,
+.st-key-homesearch [data-testid="stTextInput"] > div {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.st-key-headersearch input,
+.st-key-homesearch input {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  color: #3a4550 !important;
+  caret-color: #3a4550;
+  text-shadow: none;
+}
+
+.st-key-headersearch input:focus,
+.st-key-homesearch input:focus,
+.st-key-headersearch input:focus-visible,
+.st-key-homesearch input:focus-visible {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.st-key-headersearch input::placeholder,
+.st-key-homesearch input::placeholder {
+  color: rgba(58, 69, 80, 0.55) !important;
+}
+
+/* 돋보기 / 검색 버튼도 선명하게, 테두리 없이 */
+.st-key-headersearch [data-testid="stTextInput"]::before,
+.st-key-homesearch [data-testid="stTextInput"]::before {
+  z-index: 2;
+  opacity: 0.6;
+}
+
+.st-key-headersearch [data-testid="stFormSubmitButton"] button,
+.st-key-homesearch button {
+  position: relative !important;
+  z-index: 2;
+  border: none !important;
+  border-left: none !important;
+  border-radius: 999px !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  opacity: 0.7;
+}
+
+.st-key-headersearch [data-testid="stFormSubmitButton"] button:hover,
+.st-key-homesearch button:hover {
+  background-color: rgba(255, 255, 255, 0.35) !important;
+  opacity: 1;
+}
+"""
+
+
+ZH_FONT_CSS = (
+    # In the Chinese UI every Han glyph should fall through to the Kai face
+    # (the headword/logo font) instead of Malgun Gothic, which is what the
+    # Korean-first stack used to pick for simplified Chinese. Pretendard has
+    # no Han glyphs, so Korean text is still rendered in Pretendard; the
+    # Korean-capable fonts stay at the end of the list as an offline fallback.
+    ':root{--sans:Pretendard,"LXGW WenKai","KaiTi","STKaiti","Kaiti SC","楷体",'
+    '"Noto Sans KR","Malgun Gothic",sans-serif;}'
+    '.stApp,.stApp button,.stApp p,.stApp label,.stApp input,.stApp textarea,'
+    '.stApp [data-testid="stMarkdownContainer"],.stApp [data-testid="stWidgetLabel"]'
+    '{font-family:var(--sans),var(--kaiti);}'
+)
+
+
 def inject_styles() -> None:
     css = STYLE_PATH.read_text(encoding="utf-8") if STYLE_PATH.exists() else ""
+    if lang() == "zh":
+        css += ZH_FONT_CSS
+    css += SEARCH_FIELD_CSS
     css += (
         ".stApp{position:relative;background-image:none !important;}"
         "[data-testid='stAppViewContainer'],[data-testid='stMain']{"
@@ -466,7 +648,8 @@ def render_head(current: dict, rate: float, show_pinyin: bool) -> None:
     )
 
 
-def search_ids(records: list[dict], query: str, category: str) -> list[int]:
+def search_ranked(records: list[dict], query: str, category: str) -> list[tuple[int, int]]:
+    """Return (score, 번호) pairs, best match first."""
     pool = records if category in ("", "전체") else [row for row in records if row["범주"] == category]
     needle = query.strip()
     if not needle:
@@ -491,7 +674,11 @@ def search_ids(records: list[dict], query: str, category: str) -> list[int]:
             continue
         ranked.append((score, row["번호"]))
     ranked.sort(key=lambda item: (-item[0], item[1]))
-    return [word_id for _, word_id in ranked[:6]]
+    return ranked[:6]
+
+
+def search_ids(records: list[dict], query: str, category: str) -> list[int]:
+    return [word_id for _, word_id in search_ranked(records, query, category)]
 
 
 def related_words(pool: list[dict], current: dict, limit: int = 4) -> list[dict]:
@@ -784,7 +971,7 @@ def render_quiz(by_id: dict[int, dict]) -> None:
         def choice_text(row: dict) -> str:
             if direction == "zh":
                 return row["한국어"]
-            pinyin = f"  {row['병음']}" if st.session_state.show_pinyin and row["병음"] else ""
+            pinyin = f"  {row['병음']}" if pref("show_pinyin") and row["병음"] else ""
             return f"{row['중국어']}{pinyin}"
 
         if picked is None:
@@ -1049,9 +1236,30 @@ def render_panel(by_id: dict[int, dict]) -> None:
             render_word_buttons(st.session_state.wordbook, by_id, "bookrow", on_pick=open_from_panel)
         else:
             st.markdown(f'<p class="panel-title">{html.escape(t("설정"))}</p>', unsafe_allow_html=True)
-            st.toggle(t("병음표시"), key="show_pinyin")
-            st.toggle(t("예문병음"), key="show_example_pinyin")
-            st.slider(t("발음속도"), min_value=0.6, max_value=1.4, step=0.05, key="tts_rate")
+            st.toggle(
+                t("병음표시"),
+                value=bool(pref("show_pinyin")),
+                key="ui_show_pinyin",
+                on_change=save_pref,
+                args=("show_pinyin",),
+            )
+            st.toggle(
+                t("예문병음"),
+                value=bool(pref("show_example_pinyin")),
+                key="ui_show_example_pinyin",
+                on_change=save_pref,
+                args=("show_example_pinyin",),
+            )
+            st.slider(
+                t("발음속도"),
+                min_value=TTS_RATE_MIN,
+                max_value=TTS_RATE_MAX,
+                step=TTS_RATE_STEP,
+                value=float(pref("tts_rate")),
+                key="ui_tts_rate",
+                on_change=save_pref,
+                args=("tts_rate",),
+            )
             st.markdown(f'<p class="hint">{html.escape(t("설정힌트"))}</p>', unsafe_allow_html=True)
 
 
@@ -1075,7 +1283,7 @@ def render_examples(row: dict) -> None:
         parts = []
         if zh:
             parts.append(f'<p class="zh-ex">{html.escape(zh)}</p>')
-        if st.session_state.show_example_pinyin and py:
+        if pref("show_example_pinyin") and py:
             parts.append(f'<p class="py-ex">{html.escape(py)}</p>')
         if ko:
             parts.append(f'<p class="ko-ex">{html.escape(ko)}</p>')
@@ -1085,9 +1293,9 @@ def render_examples(row: dict) -> None:
 
 
 def render_card(current: dict, pool: list[dict], neighbors: tuple[dict | None, dict | None] | None = None) -> None:
-    rate = float(st.session_state.tts_rate)
+    rate = float(pref("tts_rate"))
     with st.container(key="wordcard"):
-        render_head(current, rate, bool(st.session_state.show_pinyin))
+        render_head(current, rate, bool(pref("show_pinyin")))
         st.markdown(f'<span class="badge">{html.escape(cat_label(current["범주"]))}</span>', unsafe_allow_html=True)
         if neighbors is not None:
             part_ids = [int(item) for item in st.session_state.get("part_ids") or []]
@@ -1179,7 +1387,6 @@ def render_card(current: dict, pool: list[dict], neighbors: tuple[dict | None, d
 
 
 def main() -> None:
-    inject_styles()
     workbook = find_workbook()
     if not workbook.exists():
         st.error(f"사전 파일을 찾지 못했습니다: {workbook}")
@@ -1189,6 +1396,7 @@ def main() -> None:
         st.error("시트에 표제어가 없습니다.")
         return
     init_state(records)
+    inject_styles()
     if "mode" not in st.session_state:
         st.session_state.mode = "dict"
     if "quiz" not in st.session_state:
@@ -1222,31 +1430,26 @@ def main() -> None:
     with st.container(key="stickyhead"):
         render_topbar()
         with st.container(key="searchwrap"):
-            st.text_input(
-                "검색",
-                key="query",
-                label_visibility="collapsed",
-                placeholder=t("검색자리"),
-            )
-    render_panel(by_id)
-    if st.session_state.panel:
-        persist()
-        return
+            # A form makes Enter submit every time (outside a form Streamlit
+            # only reruns when the value actually changed) and gives the box a
+            # visible submit button.
+            with st.form("search_form", border=False):
+                with st.container(key="headersearch", horizontal=True, vertical_alignment="center", wrap=False):
+                    st.text_input(
+                        "검색",
+                        key="query",
+                        label_visibility="collapsed",
+                        placeholder=t("검색자리"),
+                    )
+                    submitted = st.form_submit_button(t("검색실행"))
 
-    choice = st.session_state.get("category_applied") or "전체"
-    if choice not in CATEGORIES:
-        choice = "전체"
-
-    query = st.session_state.query.strip()
-    hits = search_ids(records, query, "전체")
-    token = f"{query}|전체"
-    if query and hits and st.session_state.get("exact_token") != token:
-        best = by_id[hits[0]]
-        folded = fold_pinyin(query)
-        exact = best["한국어"] == query or best["중국어"] == query or best["py_fold"] == folded
-        if exact:
-            st.session_state.exact_token = token
-            open_word(best["번호"])
+    # Search results are rendered before the drawer so that searching keeps
+    # working while 검색기록/즐겨찾기/설정 is open.
+    query = (st.session_state.get("query") or "").strip()
+    ranked = search_ranked(records, query, "전체")
+    hits = [word_id for _, word_id in ranked]
+    if submitted and ranked and ranked[0][0] >= 60:
+        open_from_search(ranked[0][1])
 
     if query:
         with st.container(key="suggest", horizontal=True, wrap=True, gap="small"):
@@ -1258,9 +1461,18 @@ def main() -> None:
                     st.button(
                         f"{row['한국어']} · {row['중국어']}",
                         key=f"sug_{word_id}",
-                        on_click=open_word,
+                        on_click=open_from_search,
                         args=(word_id,),
                     )
+
+    render_panel(by_id)
+    if st.session_state.panel:
+        persist()
+        return
+
+    choice = st.session_state.get("category_applied") or "전체"
+    if choice not in CATEGORIES:
+        choice = "전체"
 
     if st.session_state.mode == "quiz":
         if not st.session_state.quiz:
